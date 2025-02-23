@@ -1,4 +1,4 @@
-name: Xcode - Build and Analyze
+name: macOS Swift Build
 
 on:
   push:
@@ -8,16 +8,29 @@ on:
 
 jobs:
   build:
-    name: Build and analyse default scheme using xcodebuild command
-    runs-on: macos-latest
+    name: Build macOS Project
+    runs-on: macos-latest  # 必须使用 macOS 运行器
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
-      - name: Build
-        uses: sersoft-gmbh/xcodebuild-action@v3
-        with:
-          project: NotchDrop.xcodeproj
-          scheme: NotchDrop
-          destination: platform=macOS
-          action: test
+
+      # 可选 - 指定 Xcode 版本
+      - name: Select Xcode 15
+        run: sudo xcode-select -s /Applications/Xcode_15.0.app/Contents/Developer
+
+      # 必须 - 接受 Xcode 许可协议
+      - name: Accept License
+        run: sudo xcodebuild -license accept
+
+      # 根据项目类型选择构建方式 ▼▼▼
+      # 情况 1: 使用 Xcode 项目/Workspace
+      - name: Build via xcodebuild
+        run: |
+          xcodebuild \
+            -scheme "NotchDrop" \  # 替换为实际 Scheme 名称
+            -destination "platform=macOS" \
+            -configuration Release \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            clean build
