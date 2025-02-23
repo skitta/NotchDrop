@@ -20,4 +20,4 @@ jobs:
           project: NotchDrop.xcodeproj
           scheme: NotchDrop
           destination: platform=macOS
-          action: Release
+          action: test
