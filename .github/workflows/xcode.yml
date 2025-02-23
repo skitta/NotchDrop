@@ -15,16 +15,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 可选 - 指定 Xcode 版本
       - name: Select Xcode 15
-        run: sudo xcode-select -s /Applications/Xcode_15.0.app/Contents/Developer
+        run: sudo xcode-select -s /Applications/Xcode_15.0.app
 
-      # 必须 - 接受 Xcode 许可协议
-      - name: Accept License
-        run: sudo xcodebuild -license accept
-
-      # 根据项目类型选择构建方式 ▼▼▼
-      # 情况 1: 使用 Xcode 项目/Workspace
       - name: Build via xcodebuild
         run: |
           xcodebuild \
