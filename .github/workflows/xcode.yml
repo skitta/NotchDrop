@@ -1,24 +1,51 @@
-name: macOS Swift Build
+name: macOS Build
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
   build:
-    name: Build macOS Project
     runs-on: macos-latest
+    timeout-minutes: 20
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Build
-        uses: sersoft-gmbh/xcodebuild-action@v3
+      # 指定 Xcode 15 (项目要求 macOS 12+)
+      - name: Select Xcode 15
+        run: |
+          sudo xcode-select -s /Applications/Xcode_15.3.app/Contents/Developer
+          xcodebuild -version
+
+      - name: Accept Xcode License
+        run: sudo xcodebuild -license accept
+
+      # 调试：列出所有 Scheme
+      - name: List Available Schemes
+        run: xcodebuild -list -project NotchDrop.xcodeproj
+
+      # 正式构建步骤
+      - name: Build NotchDrop
+        run: |
+          xcodebuild \
+            -project "NotchDrop.xcodeproj" \
+            -scheme "NotchDrop" \
+            -destination "platform=macOS" \
+            -configuration Release \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            clean build | xcpretty
+
+      # 产物上传（可选）
+      - name: Upload Build Artifact
+        if: success()
+        uses: actions/upload-artifact@v3
         with:
-          project: NotchDrop.xcodeproj
-          scheme: NotchDrop
-          destination: platform=macOS
-          action: build
+          name: NotchDrop.app
+          path: |
+            build/Release/NotchDrop.app
+            build/Release/NotchDrop.dmg
