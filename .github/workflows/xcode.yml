@@ -39,13 +39,3 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             clean build | xcpretty
-
-      # 产物上传（可选）
-      - name: Upload Build Artifact
-        if: success()
-        uses: actions/upload-artifact@v3
-        with:
-          name: NotchDrop.app
-          path: |
-            build/Release/NotchDrop.app
-            build/Release/NotchDrop.dmg
