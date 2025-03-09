@@ -14,28 +14,11 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
-      # 指定 Xcode 15 (项目要求 macOS 12+)
-      - name: Select Xcode 15
-        run: |
-          sudo xcode-select -s /Applications/Xcode_15.3.app/Contents/Developer
-          xcodebuild -version
-
-      - name: Accept Xcode License
-        run: sudo xcodebuild -license accept
-
-      # 调试：列出所有 Scheme
-      - name: List Available Schemes
-        run: xcodebuild -list -project NotchDrop.xcodeproj
-
-      # 正式构建步骤
+        
       - name: Build NotchDrop
-        run: |
-          xcodebuild \
-            -project "NotchDrop.xcodeproj" \
-            -scheme "NotchDrop" \
-            -destination "platform=macOS" \
-            -configuration Release \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            clean build | xcpretty
+        uses: sersoft-gmbh/xcodebuild-action@v3
+        with:
+          project: NotchDrop.xcodeproj
+          scheme: NotchDrop
+          destination: platform=macOS
+          action: build
